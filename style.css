@@ -4,6 +4,7 @@
 }
 
 body {
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,4 +41,10 @@ body {
 
 .boom {
   background-color: red;
+}
+
+h1 {
+  color: blueviolet;
+  text-align: center;
+  margin: 10px;
 }
