@@ -1,4 +1,6 @@
 const grid = document.querySelector('.grid');
+const resultDisplay = document.querySelector('.results');
+
 let currenShooterIndex = 202; // starting position of the shooter
 let width = 15; //shooters' moving index
 let direction = 1;
@@ -30,7 +32,7 @@ function remove() {
     squares[alienInvaders[i]].classList.remove('invader');
   }
 }
-
+//shooter
 squares[currenShooterIndex].classList.add('shooter');
 
 //shooter's position and moves
@@ -57,9 +59,17 @@ function moveInvaders() {
 
   if (rightEdge && goingRight) {
     for (let i = 0; i < alienInvaders.length; i++) {
-      alienInvaders[i] += width - 1;
+      alienInvaders[i] += width + 1;
       direction = -1;
       goingRight = false;
+    }
+  }
+
+  if (leftEdge && !goingRight) {
+    for (let i = 0; i < alienInvaders.length; i++) {
+      alienInvaders[i] += width - 1;
+      direction = 1;
+      goingRight = true;
     }
   }
 
@@ -67,5 +77,48 @@ function moveInvaders() {
     alienInvaders[i] += direction;
   }
   draw();
+
+  //when invaders hit the shooter game is over!
+  if (squares[currenShooterIndex].classList.contains('invader', 'shooter')) {
+    resultDisplay.innerHTML = 'GAME OVER!';
+    clearInterval(invadersId);
+  }
+
+  for (let i = 0; i < alienInvaders.length; i++) {
+    if (alienInvaders[i] > squares.length + width) {
+      resultDisplay.innerHTML = 'GAME OVER!';
+      clearInterval(invadersId);
+    }
+  }
 }
-invadersId = setInterval(moveInvaders, 500);
+invadersId = setInterval(moveInvaders, 100);
+
+//shooting function
+
+function shoot(e) {
+  let laserId;
+  let currenShooterIndex = currenShooterIndex;
+  function moveLaser() {
+    squares[currentLaserIndex].classList.remove('laser');
+    currentLaserIndex -= width;
+    squares[currentLaserIndex].classList.add('laser');
+
+    if (squares[currentLaserIndex].classList.contains('invader')) {
+      squares[currentLaserIndex].classList.remove('laser');
+      squares[currentLaserIndex].classList.remove('invader');
+      squares[currentLaserIndex].classList.add('boom');
+      //remove message 'boom' after 3s
+      setTimeout(
+        () => squares[currentLaserIndex].classList.remove('boom'),
+        300
+      );
+      clearInterval(laserId);
+    }
+  }
+  switch (e.key) {
+    case 'ArrowUp':
+      laserId = setInterval(moveLaser, 100);
+  }
+}
+
+document.addEventListener('keydown', shoot);
